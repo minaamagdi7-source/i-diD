@@ -1,147 +1,40 @@
-<!-- داخل <head> أو قبل main.js -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-<script src="firebase-config.js"></script>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>i diD - Luxurious Online Shopping</title>
+
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Firebase libraries -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<!-- Firebase config -->
 <script src="firebase-config.js"></script>
+
 <style>
-/* CSS كما في الكود السابق مع تحسينات بسيطة */
+/* CSS كما في الكود القديم */
 body { font-family: 'Inter', sans-serif; color: #F5F5F5; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; }
 .luxury-header { background: linear-gradient(90deg, #16213e, #0f0f1a); box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3); border-bottom: 2px solid #D4AF37; }
 .luxury-accent { color: #D4AF37; }
-.hero-bg { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 4rem 2rem; text-align: center; position: relative; }
-.hero-bg::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/80c8e229-0be0-4835-89aa-f0083a028fe2.png') no-repeat center center; background-size: cover; opacity: 0.1; }
-.product-card { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease; backdrop-filter: blur(10px); }
-.product-card:hover { transform: translateY(-8px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2); }
-.footer { background: #0f0f1a; padding: 2rem; text-align: center; border-top: 2px solid #D4AF37; }
-.modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-.modal { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px; color: #F5F5F5; border: 2px solid #D4AF37; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-.lang-currency select { background: rgba(255, 255, 255, 0.15); color: #000000; border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.5rem; border-radius: 8px; font-weight: 500; }
-.btn-luxury { background: linear-gradient(45deg, #D4AF37, #C0C0C0); color: #1a1a2e; padding: 0.75rem 1.5rem; border-radius: 8px; transition: all 0.3s ease; font-weight: 600; }
-.btn-luxury:hover { background: linear-gradient(45deg, #C0C0C0, #D4AF37); transform: scale(1.05); }
-.nav-link { transition: color 0.3s ease; }
-.nav-link:hover { color: #D4AF37; }
-.rtl { direction: rtl; text-align: right; }
+/* ... باقي CSS من الكود القديم ... */
 </style>
 </head>
 <body class="min-h-screen transition-all duration-300">
 
-<header class="luxury-header sticky top-0 z-50 px-4 py-4 flex items-center justify-between">
-<div class="flex items-center">
-<h1 class="text-3xl font-bold luxury-accent" id="brand-name">i diD</h1>
-</div>
-<div class="flex-1 max-w-md mx-8">
-<input type="text" placeholder="Search for products..." class="w-full px-4 py-3 bg-white bg-opacity-10 text-white placeholder-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-luxury-accent" id="search-input">
-</div>
-<div class="flex items-center space-x-6">
-<select class="lang-currency" id="country-select">
-<option value="us-en-USD">United States - English</option>
-<option value="ae-ar-AED">United Arab Emirates - Arabic</option>
-<option value="fr-fr-EUR">France - French</option>
-<option value="de-de-EUR">Germany - German</option>
-<option value="jp-ja-JPY">Japan - Japanese</option>
-<option value="cn-zh-CNY">China - Chinese</option>
-<option value="in-en-INR">India - English</option>
-<option value="gb-en-GBP">United Kingdom - English</option>
-<option value="ca-en-CAD">Canada - English</option>
-<option value="au-en-AUD">Australia - English</option>
-<option value="eg-ar-EGP">Egypt - Arabic</option>
-</select>
-<select class="lang-currency" id="currency-select">
-<option value="USD">USD - United States Dollar</option>
-<option value="AED">AED - UAE Dirham</option>
-<option value="EUR">EUR - Euro</option>
-<option value="JPY">JPY - Japanese Yen</option>
-<option value="CNY">CNY - Chinese Yuan</option>
-<option value="INR">INR - Indian Rupee</option>
-<option value="GBP">GBP - British Pound</option>
-<option value="CAD">CAD - Canadian Dollar</option>
-<option value="AUD">AUD - Australian Dollar</option>
-<option value="BRL">BRL - Brazilian Real</option>
-<option value="ZAR">ZAR - South African Rand</option>
-<option value="KRW">KRW - South Korean Won</option>
-<option value="MXN">MXN - Mexican Peso</option>
-<option value="RUB">RUB - Russian Ruble</option>
-<option value="CHF">CHF - Swiss Franc</option>
-<option value="NZD">NZD - New Zealand Dollar</option>
-<option value="HKD">HKD - Hong Kong Dollar</option>
-<option value="SGD">SGD - Singapore Dollar</option>
-<option value="THB">THB - Thai Baht</option>
-<option value="SEK">SEK - Swedish Krona</option>
-<option value="EGP">EGP - Egyptian Pound</option>
-</select>
-<button class="btn-luxury" id="cart-btn">Cart (<span id="cart-count">0</span>)</button>
-<button class="btn-luxury">Login/Signup</button>
-</div>
-</header>
+<!-- ... باقي محتوى الموقع مثل header, hero, products, footer ... -->
 
-<nav class="bg-gray-800 px-4 py-4">
-<ul class="flex space-x-10 justify-center" id="nav-menu">
-<li><a href="#" class="nav-link text-white font-medium">Electronics</a></li>
-<li><a href="#" class="nav-link text-white font-medium">Fashion</a></li>
-<li><a href="#" class="nav-link text-white font-medium">Home & Garden</a></li>
-<li><a href="#" class="nav-link text-white font-medium">Beauty</a></li>
-<li><a href="#" class="nav-link text-white font-medium">Sports</a></li>
-</ul>
-</nav>
-
-<section class="hero-bg relative">
-<h2 class="text-5xl font-bold mb-6 luxury-accent relative z-10">Welcome to i diD</h2>
-<p class="text-xl mb-8 relative z-10">Discover Luxury at Your Fingertips</p>
-<div class="relative z-10">
-<img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/eee44a02-9f87-4107-968c-0fc2536e9ee1.png" alt="Elegant luxury storefront" class="mx-auto rounded-lg shadow-lg">
-</div>
-</section>
-
-<section class="px-4 py-12 bg-gray-900">
-<h3 class="text-4xl font-bold mb-12 luxury-accent text-center">Featured Products</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-10" id="products">
-<!-- المنتجات هتظهر هنا ديناميكياً من Firebase -->
-</div>
-</section>
-
-<div class="modal-bg" id="payment-modal">
-<div class="modal">
-<h3 class="text-2xl font-bold mb-4">Easy Payment Options</h3>
-<form id="payment-form">
-<div class="mb-6">
-<label class="block text-sm font-medium mb-2">Payment Method</label>
-<select class="lang-currency w-full">
-<option>Credit Card</option>
-<option>PayPal</option>
-<option>Apple Pay</option>
-</select>
-</div>
-<div class="mb-6">
-<label class="block text-sm font-medium mb-2">Card Number</label>
-<input type="text" class="w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-luxury-accent">
-</div>
-<button type="submit" class="btn-luxury w-full">Pay Now</button>
-</form>
-<button id="close-modal" class="absolute top-4 right-4 text-3xl hover:text-luxury-accent">&times;</button>
-</div>
-</div>
-
-<footer class="footer">
-<p class="mb-4 text-lg">© 2023 i diD. All rights reserved.</p>
-<div>
-<a href="#" class="text-gray-400 hover:text-white mr-4 font-medium">Privacy Policy</a>
-<a href="#" class="text-gray-400 hover:text-white mr-4 font-medium">Terms of Service</a>
-<a href="#" class="text-gray-400 hover:text-white font-medium">Contact Us</a>
-</div>
-</footer>
-
+<!-- Main JS -->
 <script src="main.js"></script>
 </body>
 </html>
